@@ -239,8 +239,11 @@ def event(player, event_id):
             # Ask user how much to save
             while True:
                 try:
-                    amount = float(input(f"How much would you like to save? (Available: £{player.balance:.2f}): "))
-                    if 0 < amount <= player.balance:
+                    amount = float(input(f"How much would you like to save? (Enter 0 to cancel, Available: £{player.balance:.2f}): "))
+                    if amount == 0:
+                        print("You decided to keep your money as cash—safe but not very profitable.")
+                        break  # Exit the amount input and skip saving
+                    elif 0 < amount <= player.balance:
                         break
                     else:
                         print("Please enter a valid amount within your balance.")
@@ -258,17 +261,14 @@ def event(player, event_id):
             # Apply effects
             if choice == 'A':
                 player.add_investment("short", amount)
-                print(f"You placed £{amount:.2f} in a short-term fixed deposit.")
                 print("You can’t use this money for 3 months, but it’ll earn 10% interest at maturity.")
 
             elif choice == 'B':
                 player.add_investment("long", amount)
-                print(f"You invested £{amount:.2f} in a long-term fixed deposit.")
                 print("It will grow steadily over a year (30% interest), but you can’t touch it meanwhile.")
 
             elif choice == 'C':
                 player.add_investment("flexible", amount)
-                print(f"You saved £{amount:.2f} in a flexible savings account.")
                 print("It earns low interest daily but you can withdraw anytime.")
 
             else:  # D

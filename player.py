@@ -30,7 +30,7 @@ class Player:
         if self.mood > 100:
             self.mood = 100
 
-        print(f"You have £{self.balance} and are feeling {self.mood_to_word(self.mood)}.\nIt is day {self.space+1} of month {self.month}.")
+        print(f"You have £{self.balance:.2f} and are feeling {self.mood_to_word(self.mood)}.\nIt is day {self.space+1} of month {self.month}.")
 
     def next_day(self):
         self.space += 1
