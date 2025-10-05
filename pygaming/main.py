@@ -21,6 +21,8 @@ font = pygame.font.SysFont('Arial', 30)
 # main game loop
 running = True
 waiting = True
+in_event = 0
+money_to_add = 0
 
 while running:
     # EVENTS
@@ -28,9 +30,22 @@ while running:
         # EXIT CLAUSE
         if event.type == pygame.QUIT:
             running = False
-        # MOVE TO NEXT DAY
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
+            print(f'in_event = {in_event}')
+            # MOVE TO NEXT DAY
+            if money_to_add == 0 and event.key == pygame.K_RETURN:
+                waiting = False
+            # ANSWER EVENT QUESTIONS
+            if event.key == pygame.K_y and money_to_add > 0:
+                print("I am being called")
+                # MONEY = determine_how_much_money_to_receive(pass in y or n)
+                player.balance += money_to_add
+                money_to_add = 0
+                in_event = 0
+                waiting = False
+            if event.key == pygame.K_n and money_to_add > 0:
+                money_to_add = 0
+                in_event = 0
                 waiting = False
 
     # BACKGROUND
@@ -53,20 +68,23 @@ while running:
     if waiting:
         continue
 
-    # GAME LOGIC UPDATE
-    if board.spaces[player.day].type == boardclass.SpaceType.SALARY:
-        player.balance += 200
+    # if in_event:
+    #     case
+    else:
+        # GAME LOGIC UPDATE
+        if board.spaces[player.day].type == boardclass.SpaceType.SALARY:
+            player.balance += 210
 
-    if board.spaces[player.day].type == boardclass.SpaceType.RAND_EVENT:
-        event_text = font.render(events.event(player, random.randint(1,2)), True, (255,255,255))
-        event_text_rect = event_text.get_rect(center=(640,480+150))
-        screen.blit(event_text, event_text_rect.topleft)
+        if board.spaces[player.day].type == boardclass.SpaceType.RAND_EVENT:
+            in_event = random.randint(1,3)
+            money_to_add = events.rand_event(player, in_event)
+            print(money_to_add)
 
     # UPDATE SCREEN
     pygame.display.flip()
     clock.tick(30)
 
-    # MOVE PLAYER
+# MOVE PLAYER
     player.advance()
     player.update()
 
