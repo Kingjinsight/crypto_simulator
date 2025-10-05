@@ -37,7 +37,7 @@ class Player:
         
     # user may spend money to travel to recover the mood to full to continue the game, or end the game if they give up or do not have enough money
     def mood_punishment(self):
-        """处理心情过低的惩罚机制"""
+        """Punishment mechanism for handling low mood"""
         print("\n⚠️  Warning: Your mood has dropped to a critical level!")
         print("You're experiencing severe emotional distress...")
         
