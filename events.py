@@ -103,3 +103,15 @@ def event(player, event_id):
                 print("You reluctantly agree. Your friend almost bursts into tears and insists you take his pay as thanks.")
             else:
                 print('Your friend sighs: "Never mind, I’ll figure something out myself."')
+
+        case 9: 
+            x = random.randint(20, 50)
+            print(f"You’re feeling unwell and spend £{x} on medicine.")
+            player.balance -= x
+            player.mood -= round(x / 2.5)
+
+        case 10:
+            x = random.randint(30, 80)
+            print(f"Your laptop slipped off the desk! You spend £{x} to get it repaired.")
+            player.balance -= x
+            player.mood -= round(x / 2.5)
