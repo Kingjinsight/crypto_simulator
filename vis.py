@@ -387,7 +387,7 @@ class VisualGame:
 
     def draw_status_panel(self):
         """Draw the status panel on the right side"""
-        panel_x = BOARD_SIZE + 10
+        panel_x = BOARD_SIZE + 30
         
         # Draw panel background with semi-transparency
         panel_surface = pygame.Surface((STATUS_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -431,9 +431,8 @@ class VisualGame:
         date_text = self.font.render(f"Day: {self.player.space+1} of Month {self.player.month}", True, BLACK)
         self.screen.blit(date_text, (panel_x + 20, 140))
         
-        # Draw next生活费 info
         days_until_salary = 28 - ((self.player.days - 1) % 28)
-        salary_text = self.font.render(f"Time until the next living allowance is issued: {days_until_salary} days", True, GREEN)
+        salary_text = self.font.render(f"Next allowance: {days_until_salary} days", True, GREEN)
         self.screen.blit(salary_text, (panel_x + 20, 170))
         
         # Draw current space info
@@ -472,10 +471,7 @@ class VisualGame:
         for i, control in enumerate(controls):
             control_text = self.font.render(control, True, BLACK)
             self.screen.blit(control_text, (panel_x + 20, 410 + i * 25))
-        
-        # Draw生活费 info
-        salary_info = self.font.render("生活费: £840/month", True, GREEN)
-        self.screen.blit(salary_info, (panel_x + 20, 490))
+
         
         # Draw message if any
         if self.message and self.message_timer > 0:
@@ -495,7 +491,7 @@ class VisualGame:
 
     def draw_event_dialog(self):
         """Draw event dialog when an event occurs"""
-        if not self.event_active or not self.current_event:
+        if not self.event_active:
             return
             
         # Draw semi-transparent overlay
@@ -505,7 +501,7 @@ class VisualGame:
         
         # Draw dialog box
         dialog_width = 600
-        dialog_height = 300
+        dialog_height = 400 if self.event_requires_input else 300
         dialog_x = (SCREEN_WIDTH - dialog_width) // 2
         dialog_y = (SCREEN_HEIGHT - dialog_height) // 2
         
@@ -522,9 +518,25 @@ class VisualGame:
             text = self.font.render(line, True, BLACK)
             self.screen.blit(text, (dialog_x + 20, dialog_y + 60 + i * 25))
         
-        # Draw instruction
-        inst_text = self.font.render("Press any key to continue...", True, GRAY)
-        self.screen.blit(inst_text, (dialog_x + 20, dialog_y + dialog_height - 40))
+        if self.event_requires_input:
+            # Draw choices
+            choice_y = dialog_y + 60 + len(event_lines) * 25 + 20
+            for i, choice in enumerate(self.event_choices):
+                choice_text = self.font.render(f"{i+1}. {choice}", True, BLACK)
+                self.screen.blit(choice_text, (dialog_x + 20, choice_y + i * 30))
+            
+            # Draw instruction
+            if self.event_input_type == 'yn':
+                inst_text = self.font.render("Press 1 for Yes, 2 for No", True, GRAY)
+            elif self.event_input_type == 'abc':
+                inst_text = self.font.render("Press 1 for A, 2 for B, 3 for C", True, GRAY)
+            else:
+                inst_text = self.font.render("Press number key to choose", True, GRAY)
+            self.screen.blit(inst_text, (dialog_x + 20, dialog_y + dialog_height - 40))
+        else:
+            # Simple event - just press any key
+            inst_text = self.font.render("Press any key to continue...", True, GRAY)
+            self.screen.blit(inst_text, (dialog_x + 20, dialog_y + dialog_height - 40))
 
     def draw_investment_menu(self):
         """Draw investment menu"""
@@ -608,9 +620,242 @@ class VisualGame:
     def handle_random_event(self):
         """Handle random event when landing on event space"""
         event_id = random.randint(1, 22)
-        self.current_event = event(self.player, event_id)
+        
+        # 存储事件ID和相关信息
+        self.current_event_id = event_id
+        self.event_choices = []
+        self.event_requires_input = False
+        self.event_input_type = None  # 'yn', 'abc', 'amount'
+        
+        # 根据事件ID设置不同的交互方式
+        if event_id in [3, 4, 8, 11, 12, 13, 15, 17, 18, 19, 20]:
+            # 这些是需要Y/N选择的事件
+            self.event_requires_input = True
+            self.event_input_type = 'yn'
+            
+            # 设置事件描述和选择
+            if event_id == 3:
+                self.current_event = "Marnix asks you to invest £50 in TrumpCoin. Do you accept?"
+                self.event_choices = ["Yes - Risky investment", "No - Play it safe"]
+            elif event_id == 4:
+                self.current_event = "Your friend invites you to join a student club for one month (£25 membership fee). Join?"
+                self.event_choices = ["Yes - Pay £25 to join", "No - Save money"]
+            elif event_id == 8:
+                self.current_event = "Your friend needs you to cover his shift. You're exhausted. Help him?"
+                self.event_choices = ["Yes - Help friend (-20 mood, +£30)", "No - Rest instead"]
+            elif event_id == 11:
+                ticket_cost = random.randint(5, 20)
+                self.current_event = f"Campus lottery: Buy ticket for £{ticket_cost}? Prizes up to £200!"
+                self.event_choices = [f"Yes - Buy ticket (£{ticket_cost})", "No - Save money"]
+                self.event_data = {"ticket_cost": ticket_cost}
+            elif event_id == 12:
+                hours = random.randint(4, 8)
+                self.current_event = f"Campus café offers {hours}-hour shift. Take it?"
+                self.event_choices = [f"Yes - Work {hours} hours", "No - Relax instead"]
+                self.event_data = {"hours": hours}
+            elif event_id == 13:
+                base_price = random.randint(10, 20)
+                higher_price = random.randint(21, 40)
+                self.current_event = f"Sell textbook: Take £{base_price} now or try for £{higher_price}?"
+                self.event_choices = [f"Take £{base_price} now", f"Try for £{higher_price}"]
+                self.event_data = {"base_price": base_price, "higher_price": higher_price}
+            elif event_id == 15:
+                self.current_event = "It's a school day. Go to campus?"
+                self.event_choices = ["Yes - Go to school", "No - Skip class"]
+            elif event_id == 17:
+                self.current_event = "Friend invites you to concert (£15 ticket). Go?"
+                self.event_choices = ["Yes - Buy ticket (£15)", "No - Study instead"]
+            elif event_id == 18:
+                hours = random.randint(5, 15)
+                self.current_event = f"Extra weekend shift ({hours} hours) but miss friend's party. Work?"
+                self.event_choices = [f"Yes - Work (+£{hours*10})", "No - Go to party"]
+                self.event_data = {"hours": hours}
+            elif event_id == 19:
+                self.current_event = "Buy £10 gift for friend's birthday?"
+                self.event_choices = ["Yes - Buy gift (£10)", "No - Skip party"]
+            elif event_id == 20:
+                self.current_event = "Weekend trip invitation (£50). Join?"
+                self.event_choices = ["Yes - Go on trip (£50)", "No - Stay home"]
+        
+        elif event_id == 5:
+            # 教科书购买选择 (ABC)
+            self.event_requires_input = True
+            self.event_input_type = 'abc'
+            self.current_event = "You need to buy textbooks. Choose option:"
+            self.event_choices = [
+                "A: Rent books - £30",
+                "B: Buy used books - £50", 
+                "C: Buy new books - £80"
+            ]
+        
+        elif event_id == 21:
+            # 投资事件 - 需要金额输入
+            self.event_requires_input = True
+            self.event_input_type = 'amount'
+            self.current_event = "Investment options:"
+            self.event_choices = [
+                "A: Short-term (3 months, 10% interest)",
+                "B: Long-term (1 year, 30% interest)", 
+                "C: Flexible (daily interest, 2% annual)",
+                "D: Cancel"
+            ]
+        
+        else:
+            # 简单事件，不需要用户输入
+            self.current_event = self.execute_simple_event(event_id)
+            self.event_requires_input = False
+        
         self.event_active = True
 
+    def execute_simple_event(self, event_id):
+        """执行不需要用户输入的简单事件"""
+        if event_id == 1:
+            x = random.randint(10,50)
+            self.player.balance += x
+            self.player.mood += round(x/2.5)
+            return f"You find £{x} on the street. Lucky you!"
+        
+        elif event_id == 2:
+            x = random.randint(10,50)
+            self.player.balance -= x
+            self.player.mood -= round(x/2.5)
+            return f"You are robbed by some plucky seagulls. You lose £{x}."
+        
+        elif event_id == 6:
+            self.player.mood += 20
+            return "You went to the library today. You feel more fulfilled and happier."
+        
+        elif event_id == 7:
+            self.player.mood -= 10
+            return "You feel like you have too many assignments and are under huge pressure."
+        
+        elif event_id == 9:
+            x = random.randint(20, 50)
+            self.player.balance -= x
+            self.player.mood -= round(x / 2.5)
+            return f"You're feeling unwell and spend £{x} on medicine."
+        
+        elif event_id == 10:
+            x = random.randint(30, 80)
+            self.player.balance -= x
+            self.player.mood -= round(x / 2.5)
+            return f"Your laptop slipped off the desk! You spend £{x} to get it repaired."
+        
+        elif event_id == 14:
+            prize = random.randint(10, 50)
+            self.player.balance += prize
+            self.player.mood += round(prize/2.5)
+            return f"You won a hackathon! Prize: £{prize}. Well done!"
+        
+        elif event_id == 16:
+            repair_cost = random.randint(3, 8)
+            self.player.balance -= repair_cost
+            self.player.mood -= round(repair_cost / 1.5)
+            return "You spill coffee on your study notes. Buy new coffee + reprint notes."
+        
+        else:
+            # 默认简单事件
+            gain = random.randint(10, 30)
+            self.player.balance += gain
+            self.player.mood += 5
+            return f"Lucky day! You gain £{gain}."
+
+    def handle_event_choice(self, choice):
+        """处理用户的事件选择"""
+        if self.current_event_id == 3:
+            # TrumpCoin投资
+            if choice == 0:  # Yes
+                x = random.randint(1,5)
+                if x == 1:
+                    self.player.balance += 50
+                    self.player.mood += 25
+                    return "You somehow turn a tidy profit of £50!"
+                elif x == 2:
+                    return "You manage to break even. Close shave!"
+                else:
+                    self.player.balance -= 50
+                    self.player.mood -= 30
+                    return "You lose everything. Bad investment!"
+            else:  # No
+                return "You decline the risky investment."
+        
+        elif self.current_event_id == 4:
+            # 学生俱乐部
+            if choice == 0:  # Yes
+                self.player.balance -= 25
+                x = random.randint(1, 3)
+                if x == 1:
+                    self.player.mood += 20
+                    return "Great time! Met new friends!"
+                elif x == 2:
+                    self.player.mood += 10
+                    return "Fun but time-consuming."
+                else:
+                    return "Didn't click with anyone."
+            else:  # No
+                self.player.mood -= 5
+                return "Saved money but missed some fun."
+        
+        elif self.current_event_id == 5:
+            # 教科书
+            if choice == 0:  # A - Rent
+                self.player.balance -= 30
+                return "Rented textbooks. -£30"
+            elif choice == 1:  # B - Used
+                self.player.balance -= 50
+                return "Bought used textbooks. -£50"
+            else:  # C - New
+                self.player.balance -= 80
+                return "Bought new textbooks. -£80"
+        
+        # ... 其他事件的处理逻辑（按照类似模式）
+        
+        elif self.current_event_id == 8:
+            # 帮朋友代班
+            if choice == 0:  # Yes
+                self.player.mood -= 20
+                self.player.balance += 30
+                return "Helped friend. -20 mood, +£30"
+            else:  # No
+                return "Declined to help friend."
+        
+        elif self.current_event_id == 11:
+            # 彩票
+            ticket_cost = self.event_data["ticket_cost"]
+            if choice == 0:  # Yes
+                self.player.balance -= ticket_cost
+                if random.randint(1, 25) == 1:
+                    prize = random.randint(10, 200)
+                    self.player.balance += prize
+                    self.player.mood += 20
+                    return f"Won £{prize} in lottery!"
+                else:
+                    self.player.mood -= 10
+                    return "No luck this time."
+            else:  # No
+                self.player.mood += 3
+                return "Saved money from lottery."
+        
+        elif self.current_event_id == 12:
+            # 咖啡店工作
+            hours = self.event_data["hours"]
+            if choice == 0:  # Yes
+                base_pay = hours * 12
+                self.player.balance += base_pay
+                self.player.mood -= 8
+                if random.randint(1, 10) == 1:
+                    bonus = random.randint(int(base_pay * 0.2), int(base_pay * 0.5))
+                    self.player.balance += bonus
+                    self.player.mood += 15
+                    return f"Great work! Bonus: £{bonus}. Total: £{base_pay + bonus}"
+                return f"Worked {hours} hours. Earned £{base_pay}"
+            else:  # No
+                self.player.mood += 10
+                return "Took a break. Nice relaxation!"
+        
+        # ... 继续添加其他事件的处理
+        
+        return "Choice processed."
     def next_day(self):
         """Advance to the next day"""
         if self.player.game_over:
@@ -691,9 +936,22 @@ class VisualGame:
                     running = False
                 
                 elif event.type == pygame.KEYDOWN:
+                    # 在事件处理部分修改为：
                     if self.event_active:
-                        # Close event dialog
-                        self.event_active = False
+                        if self.event_requires_input:
+                            # 需要选择的事件
+                            if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
+                                choice_idx = event.key - pygame.K_1
+                                if choice_idx < len(self.event_choices):
+                                    result = self.handle_event_choice(choice_idx)
+                                    self.set_message(result)
+                                    self.event_active = False
+                            elif event.key == pygame.K_ESCAPE:
+                                self.event_active = False
+                        else:
+                            # 简单事件 - 按任何键关闭
+                            if event.key:  # 任何按键
+                                self.event_active = False
                     
                     elif self.investment_menu_active:
                         if self.input_active:
