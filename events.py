@@ -60,10 +60,7 @@ def event(player, event_id):
                 player.mood -= 5
 
         # Part-time job – +money, -happiness
-        # Studying in the library – +happiness
-        # Scholarship received – +money
         # Group project collaboration – +happiness
-        # Exam preparation – -happiness
 
         case 5:
             print("You need to buy textbooks - and they are not cheap.")
@@ -92,4 +89,17 @@ def event(player, event_id):
             print("You went to the library today. You feel more fulfilled and happier.")
             player.mood += 20
 
-            
+        case 7:
+            print("You feel like you have too many assignments and are under a huge pressure.")
+            player.mood += 10
+
+        case 8:
+            print('Your friend is pleading with you: "Today is my girlfriend’s birthday, so I can’t go to my part-time job. Please help me cover my shift!"')
+            choice = yn_input("You’re already exhausted. Will you help him? (Y/N): ")
+
+            if choice:
+                player.mood -= 20
+                player.balance += 30
+                print("You reluctantly agree. Your friend almost bursts into tears and insists you take his pay as thanks.")
+            else:
+                print('Your friend sighs: "Never mind, I’ll figure something out myself."')
