@@ -14,7 +14,7 @@ while True:
         player.balance += 210
 
     if board.spaces[player.space].type == SpaceType.RAND_EVENT:
-        event(player, random.randint(1,8))
+        event(player, random.randint(1,22))
  
     player.status()
     next = input()

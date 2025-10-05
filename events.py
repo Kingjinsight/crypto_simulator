@@ -222,3 +222,54 @@ def event(player, event_id):
             else:
                 print("You didnt go to the trip, however you manage to get a lit of work done over the weekends.")
                 player.mood -= 10
+
+        case 22:
+            # Check player has money
+            if player.balance <= 0:
+                print("Unfortunately, you don’t have any money to save right now.")
+                exit
+
+            print("You decide it’s time to start saving some money for the future.")
+            print("How would you like to save?")
+            print("Option A: Short-term fixed deposit (3 months, higher interest, but you can’t withdraw early).")
+            print("Option B: Long-term fixed deposit (1 year, best interest, but money is locked for a long time).")
+            print("Option C: Flexible savings account (lower interest, but you can withdraw anytime).")
+            print("Option D: Do not save.")
+
+            # Ask user how much to save
+            while True:
+                try:
+                    amount = float(input(f"How much would you like to save? (Available: £{player.balance:.2f}): "))
+                    if 0 < amount <= player.balance:
+                        break
+                    else:
+                        print("Please enter a valid amount within your balance.")
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+
+            # Ask for saving option
+            while True:
+                choice = input("Please enter A/B/C/D: ").upper().strip()
+                if choice in ['A', 'B', 'C', 'D']:
+                    break
+                else:
+                    print("Invalid choice. Please enter A, B, C, or D.")
+
+            # Apply effects
+            if choice == 'A':
+                player.add_investment("short", amount)
+                print(f"You placed £{amount:.2f} in a short-term fixed deposit.")
+                print("You can’t use this money for 3 months, but it’ll earn 10% interest at maturity.")
+
+            elif choice == 'B':
+                player.add_investment("long", amount)
+                print(f"You invested £{amount:.2f} in a long-term fixed deposit.")
+                print("It will grow steadily over a year (30% interest), but you can’t touch it meanwhile.")
+
+            elif choice == 'C':
+                player.add_investment("flexible", amount)
+                print(f"You saved £{amount:.2f} in a flexible savings account.")
+                print("It earns low interest daily but you can withdraw anytime.")
+
+            else:  # D
+                print("You decided to keep your money as cash—safe but not very profitable.")
