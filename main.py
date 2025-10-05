@@ -8,16 +8,18 @@ class Player:
         self.position = 0
         self.cash = 10000
         self.portfolio = {}  # add with {crypto name, number}
+        self.happness = 0
         self.color = color  # player color
         self.laps_completed = 0  # how many circule the player finished
 
-    def add_cash(self, amount):
+    def change_cash(self, amount):
         self.cash += amount
-
-    def remove_cash(self, amount):
-        self.cash -= amount
         if self.cash < 0:
             self.cash = 0
+
+    
+    def change_happness(self, amount):
+        self.happness += amount
 
     def buy_crypto(self, symbol, quantity, price): # symbol: name of the crypto
         cost = quantity * price
@@ -77,12 +79,23 @@ class CryptoMarket:
                 self.prices[symbol] = 0.01
             self.save_history()
 
-class Event:
+class Financial_Event:
     def __init__(self, name, event_type, change_percent):
+        # the change of percent could be both positive and negative
         self.name = name
         self.describe = None
         self.event_type = event_type
         self.change_percent = change_percent
+
+class Life_Event:
+    def __init__(self, name, event_type, change_amount, change_happness_amount): 
+        # the change of cash amount and the change of happness amount can be positive and negative
+        self.name = name
+        self.describe = None
+        self.event_type = event_type
+        self.change_amount = change_amount
+        self.change_happness = change_happness
+        
 
 class GameData:
     def __init__(self):
