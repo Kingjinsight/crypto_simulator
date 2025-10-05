@@ -78,7 +78,7 @@ class Player:
             print("❌ Not enough balance to invest that much.")
             return
 
-        # 设定不同类型的利率与周期
+        # Set different types of interest rates and periods
         if invest_type == "short":
             rate, duration = 0.10, 30  # 10% month interest
         elif invest_type == "long":
