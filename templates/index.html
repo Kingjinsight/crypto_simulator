@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Crypto Monopoly</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -325,28 +326,20 @@
 		</div>
 	</div>
 
-	<!-- Simple control UI -->
-	<div id="controls">
-		<button id="roll-btn">Roll Dice 🎲</button>
-		<p>Dice Result: <span id="dice-result">-</span></p>
-		<p>Player Position: <span id="player-pos">0</span></p>
-	  </div>
-	
-	  <!-- add script -->
-	  <script src="{{ url_for('static', filename='main.js') }}"></script>
-
-	  <!-- Add this control panel -->
-	  <div id="controls" style="text-align: center; margin-top: 20px;">
-        <button id="roll-btn" style="font-size: 24px; padding: 10px 30px;">
+	<!-- Control Panel -->
+	<div id="controls" style="text-align: center; margin-top: 20px;">
+        <button id="roll-btn" style="font-size: 24px; padding: 10px 30px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px;">
             Roll Dice 🎲
         </button>
-        <div style="margin-top: 20px; font-size: 18px;">
+        <div style="margin-top: 20px; font-size: 18px; font-family: Arial, sans-serif;">
             <p>💰 Money: $<span id="player-money">1500</span></p>
             <p>🎲 Dice: <span id="dice-result">-</span></p>
             <p>📍 Position: <span id="player-pos">0</span></p>
         </div>
-        <div id="event-message" style="display: none; margin-top: 20px; padding: 10px; background: yellow;"></div>
+        <div id="event-message" style="display: none; margin: 20px auto; padding: 15px; background: #ffeb3b; max-width: 500px; border-radius: 5px; font-weight: bold;"></div>
     </div>
 
+    <!-- Load script ONCE at the end -->
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
+</html>

@@ -69,5 +69,26 @@ def handle_tile_event(tile_type):
     elif tile_type == 'JACKPOT':
         game.player_money += 500
         return "JACKPOT! You won $500!"
-    # Add more tile event handlers
+    elif tile_type == 'NEWS':
+        return "Breaking News! Market conditions changed!"
+    elif tile_type == 'EXCHANGE':
+        return "Welcome to the Exchange!"
+    elif tile_type == 'LUCKY':
+        bonus = random.randint(50, 200)
+        game.player_money += bonus
+        return f"Lucky day! You got ${bonus}!"
+    elif tile_type == 'CHANCE':
+        return "Take a chance card!"
+    elif tile_type == 'QUEST':
+        return "New quest available!"
+    elif tile_type == 'START':
+        game.player_money += 200
+        return "Passed GO! Collect $200!"
+    
     return f"You landed on {tile_type}"
+
+# THIS IS THE MISSING PART!
+if __name__ == '__main__':
+    print("Starting Flask server...")
+    print("Open your browser and go to: http://127.0.0.1:5000")
+    app.run(debug=True, host='127.0.0.1', port=5000)
