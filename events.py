@@ -37,4 +37,59 @@ def event(player, event_id):
                     player.balance -= 50
                     player.mood -= 30
 
+        case 4:
+            print("Your friend invites you to join a student club for one month (£25 membership fee).")
 
+            choice = yn_input("Do you want to join? (Y/N): ")
+
+            if choice:
+                x = random.randint(1, 3)
+                if x == 1:
+                    print("You have a great time and meet new friends! Worth every penny.")
+                    player.balance -= 25
+                    player.mood += 20
+                elif x == 2:
+                    print("It was fun but also time-consuming. You enjoy it a bit but lose some sleep.")
+                    player.balance -= 25
+                    player.mood += 10
+                else:
+                    print("You didn’t really click with anyone, but at least you tried something new.")
+                    player.balance -= 25
+            else:
+                print("You decided not to join. You saved money, but maybe missed out on some fun.")
+                player.mood -= 5
+
+        # Part-time job – +money, -happiness
+        # Studying in the library – +happiness
+        # Scholarship received – +money
+        # Group project collaboration – +happiness
+        # Exam preparation – -happiness
+
+        case 5:
+            print("You need to buy textbooks - and they are not cheap.")
+            print("Option A: Rent books - £30")
+            print("Option B: Buy used books - £50") 
+            print("Option C: Buy new books - £80")
+            
+            while True:
+                choice = input("Please enter A/B/C: ").upper().strip()
+                if choice == 'A':
+                    player.balance -= 30
+                    print("You rented the textbooks. -£30")
+                    break
+                elif choice == 'B':
+                    player.balance -= 50
+                    print("You bought used textbooks. -£50")
+                    break
+                elif choice == 'C':
+                    player.balance -= 80
+                    print("You bought new textbooks. -£80")
+                    break
+                else:
+                    print("Invalid choice. Please enter A, B, or C.")
+
+        case 6:
+            print("You went to the library today. You feel more fulfilled and happier.")
+            player.mood += 20
+
+            
