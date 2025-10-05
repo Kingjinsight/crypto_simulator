@@ -115,3 +115,110 @@ def event(player, event_id):
             print(f"Your laptop slipped off the desk! You spend £{x} to get it repaired.")
             player.balance -= x
             player.mood -= round(x / 2.5)
+
+#happy events
+        case 11:
+            lottery_win = random.randint(20, 100)
+            print(f"You win £{lottery_win} in a campus lottery!")
+            player.balance += lottery_win
+            player.mood += round(lottery_win / 2) 
+
+        case 12:
+            extra_pay = random.randint(5, 50)
+            print(f"Due to your hard work during shifts, you have been awarded a bonus pay £{extra_pay}.")
+            player.balance += extra_pay
+            player.mood += round(extra_pay/2)
+
+        case 13: 
+            textbook = random.randint(3, 10)
+            print(f"Someone bought the second hand textbook that you posted up, you've sold £{textbook}.")
+            player.balance += textbook 
+            player.mood += round(textbook/2)
+
+        case 14:
+            prize = random.randint(10, 50)
+            print(f"You have entered a hackathon and are nominated as the winner, you receive £{prize} as the prize, well done!")
+            player.balance += prize
+            player.mood += round(prize/2.5)
+
+#sad events
+        case 15:
+            car = random.randint(50, 150)
+            print (f"During your ride to school you realised that there is a breakage in your car, £{car} is needed for fixing. ")
+            player.balance -= car
+            player.mood -= round(car/10)
+
+        case 16:
+            scam = random.randint(50, 100)
+            print (f"You fall into a scam when trying to buy concert tickets online, £{scam} was lost unfortunately. ")
+            player.balance -= scam
+            player.mood -= round(scam/8)
+
+        case 17:
+            repair_cost = random.randint(3, 8)
+            print("You spill coffee on your study notes. You buy a new coffee + reprint notes.")
+            player.balance -= repair_cost
+            player.mood -= round(repair_cost / 1.5)
+
+#choice events
+        case 18:
+            ticket_cost = 15
+            choice = yn_input(f"Your friend invited you to your favourite band’s concert, the ticket costs £{ticket_cost}. Are you willing to join? (Y/N): ")
+            if choice:
+                if player.balance >= ticket_cost:
+                    player.balance -= ticket_cost
+                    print("You go to the concert and had an amazing time! ")
+                    player.balance -= ticket_cost
+                    player.mood += 20
+                else:
+                    print("You realise that you dont have enough money for the ticket.")
+                    player.mood -= 10
+            else:
+                print("You skip the concert to study. Stay productive, but you feel left out. ")
+                player.mood -= 5
+
+        case 19:
+            hours = random.randint(5, 15)
+            wage = 10
+            choice = yn_input("Your boss asks if you can do extra shifts over the weekend, however that means you need to miss your best friend’s birthday party. Would you choose to do an extra shift? (Y/N): ")
+            if choice:
+                earnings = hours * wage
+                print(f"You work {hours} hours and earn £{earnings}. ")
+                player.balance += earnings
+                player.mood -= round(hours / 2) 
+            else:
+                print("You decline the shift and decided to go to the party, You had fun but realised that you are getting a bit broke for spending.")
+                player.balance -= (hours / 2) 
+                player.mood += 10
+
+        case 20:
+            gift_price = 10
+            choice = yn_input("It’s your best friend’s birthday soon! Would you like to buy her a gift? (Y/N): ")
+            if choice:
+                if player.balance >= gift_price:
+                    player.balance -= gift_price
+                    print("You went to the party and had an amazing time with your friends!")
+                    player.balance -= gift_price
+                    player.mood += 15
+                else:
+                    print("You realise that you dont have enough money for any gifts.")
+                    player.mood -= 10
+            else:
+                print("You didn't go to the party, your friend is unhappy because of it.")
+                player.mood -= 15
+
+        case 21:
+            trip = 50
+            choice = yn_input("You got invited for a weekend trip, are you willing to join? (Y/N): ")
+            if choice:
+                if player.balance >= trip:
+                    player.balance -= trip
+                    print("You went to the trip and had an amazing time with your friends!")
+                    player.balance -= trip
+                    player.mood += 15
+                else:
+                    print("The trip is out of your budget, you can't make it in the end.")
+                    player.mood -= 10
+            else:
+                print("You didnt go to the trip, however you manage to get a lit of work done over the weekends.")
+                player.mood -= 10
